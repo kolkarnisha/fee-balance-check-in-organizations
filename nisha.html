@@ -1,127 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ALGONEX Management System</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #53c710; }
-    form { margin-bottom: 20px; }
-    label { display: block; margin-top: 1px; }
-    input, button { padding: 8px; margin-top: 15px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 29px; }
-    th, td { border: 1px solid #117cc4; padding: 8px; text-align: left; }
-    th { background-color: #dd10c2; }
-    .actions button { margin-right: 15px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Algonex Fee Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="cssofhtml.css" />
 </head>
 <body>
-  <h1>ALGONEX Management System</h1>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-content">
+        <div class="hero-copy">
+          <p class="eyebrow">Algonex IT Solutions</p>
+          <h1>Fee Management Portal</h1>
+          <p>Track student fee balances, payment progress, and training status in a modern, professional dashboard.</p>
+          <div class="hero-actions">
+            <div class="hero-card">
+              <h3>Mentor Support</h3>
+              <p>For any payment questions, please contact Mentor Ganesh Pasala.</p>
+              <a href="#" class="btn">Request Assistance</a>
+            </div>
+            <button id="themeToggle" class="theme-toggle" type="button">🌙 Dark Mode</button>
+          </div>
+        </div>
+        <div class="hero-media">
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Students learning in a professional training environment" />
+          <div class="floating-badge">Trusted by 500+ learners</div>
+        </div>
+      </div>
+    </header>
 
-  <!-- Add Student Form -->
-  <form id="addStudentForm">
-    <h2>Add Student</h2>
-    <label>Name: <input type="text" name="names" required></label>
-    <label>Course: <input type="text" name="courses" required></label>
-    <label>CGPA: <input type="text" name="cgpas" required></label>
-    <button type="submit">Add Student</button>
-  </form>
+    <main class="dashboard">
+      <section class="top-grid">
+        <div class="card">
+          <h2>Student Fee Check</h2>
+          <form id="studentForm">
+            <label for="studentId">Enter Student ID</label>
+            <input id="studentId" type="text" placeholder="e.g. ALG001" required />
+            <button type="submit">Check Status</button>
+          </form>
+          <div id="resultBox" class="result-box">Search a student to view the fee balance and training status.</div>
+        </div>
 
-  <!-- Search Student Form -->
-  <form id="searchStudentForm">
-    <h2>Search Student</h2>
-    <label>Enter Name: <input type="text" name="searchNames" required></label>
-    <button type="submited">Search</button>
-  </form>
+        <div class="card">
+          <h2>Portal Summary</h2>
+          <div class="stats-grid">
+            <div class="stat-box"><span>Total Students</span><strong id="totalStudents">0</strong></div>
+            <div class="stat-box"><span>Pending Balance</span><strong id="pendingBalance">Rs0</strong></div>
+            <div class="stat-box"><span>Fully Paid</span><strong id="fullyPaid">0</strong></div>
+            <div class="stat-box"><span>Active Training</span><strong id="activeStudents">0</strong></div>
+          </div>
+        </div>
+      </section>
 
-  <!-- Student List -->
-  <h2>View Students</h2>
-  <table id="studentsTable">
-    <thead>
-      <tr>
-        <th>Names</th>
-        <th>Courses</th>
-        <th>CGPAs</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Student rows will be dynamically inserted here -->
-    </tbody>
-  </table>
+      <section class="card insights-card">
+        <div class="section-title">
+          <h2>Collection Insights</h2>
+          <span class="chip">Live progress</span>
+        </div>
+        <div class="progress-list">
+          <div class="progress-item">
+            <div class="progress-meta">
+              <span>Fee Coverage</span>
+              <strong id="coveragePercent">0%</strong>
+            </div>
+            <div class="progress-bar"><span id="coverageBar"></span></div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-meta">
+              <span>Payment Completion</span>
+              <strong id="completionPercent">0%</strong>
+            </div>
+            <div class="progress-bar"><span id="completionBar"></span></div>
+          </div>
+        </div>
+      </section>
 
-  <!-- Statistics -->
-  <h2>Statistics</h2>
-  <p id="stats">No data yet.</p>
+      <section class="card">
+        <div class="section-title">
+          <h2>Student Records</h2>
+          <input id="searchInput" type="search" placeholder="Search by name or ID" />
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Total Fee</th>
+              <th>Fee Paid</th>
+              <th>Balance</th>
+              <th>Training Start</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody"></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
 
   <script>
-    let students = [];
+    const students = [
+      { id: "ALG001", name: "Nisha Zareentaj", email: "neeshakolkar@gmail.com", total_fee: 25000, fee_paid: 5000, training_start: "2026-08-01", training_days: 60 },
+      { id: "ALG002", name: "KARTHIK PASALA", email: "karthik@example.com", total_fee: 15000, fee_paid: 10000, training_start: "2026-08-05", training_days: 60 },
+      { id: "ALG003", name: "KEERTHI REDDY", email: "keerthi@example.com", total_fee: 15000, fee_paid: 5000, training_start: "2026-08-10", training_days: 60 },
+      { id: "ALG004", name: "RAGIRI INDHU", email: "ragiri@example.com", total_fee: 15000, fee_paid: 0, training_start: "2026-08-15", training_days: 60 },
+      { id: "ALG005", name: "SOWMYA REDDY", email: "sowmya@example.com", total_fee: 15000, fee_paid: 15000, training_start: "2026-08-20", training_days: 60 }
+    ];
 
-    function renderStudents(list = students) {
-      const tbody = document.querySelector("#studentsTable tbody");
-      tbody.innerHTML = "";
-      list.forEach((s, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${s.name}</td>
-          <td>${s.course}</td>
-          <td>${s.cgpa}</td>
-          <td class="actions">
-            <button onclick="updateStudent(${index})">Update</button>
-            <button onclick="deleteStudent(${index})">Delete</button>
-          </td>
-        `;
-        tbody.appendChild(row);
+    function formatCurrency(value) {
+      return `Rs${value.toLocaleString()}`;
+    }
+
+    function calculateDaysRemaining(startDateStr, totalDays) {
+      const startDate = new Date(startDateStr);
+      const today = new Date();
+      const diffTime = today - startDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return totalDays;
+      return Math.max(totalDays - diffDays, 0);
+    }
+
+    function getStatus(balance, daysLeft) {
+      if (balance <= 0) return { label: "Fully Paid", className: "paid" };
+      if (daysLeft === 0) return { label: "Completed", className: "completed" };
+      return { label: "Pending Payment", className: "pending" };
+    }
+
+    function renderTable(filter = "") {
+      const query = filter.toLowerCase();
+      const rows = students.filter(student => {
+        return student.id.toLowerCase().includes(query) || student.name.toLowerCase().includes(query);
       });
-      updateStats();
+
+      const tbody = document.getElementById("studentTableBody");
+      tbody.innerHTML = rows.map(student => {
+        const balance = student.total_fee - student.fee_paid;
+        const daysLeft = calculateDaysRemaining(student.training_start, student.training_days);
+        const status = getStatus(balance, daysLeft);
+        return `
+          <tr>
+            <td>${student.id}</td>
+            <td>${student.name}</td>
+            <td>${formatCurrency(student.total_fee)}</td>
+            <td>${formatCurrency(student.fee_paid)}</td>
+            <td>${formatCurrency(balance)}</td>
+            <td>${student.training_start} (${daysLeft} days left)</td>
+            <td><span class="status-pill ${status.className}">${status.label}</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      const totalPending = students.reduce((sum, student) => sum + Math.max(student.total_fee - student.fee_paid, 0), 0);
+      const totalCollected = students.reduce((sum, student) => sum + student.fee_paid, 0);
+      const totalFee = students.reduce((sum, student) => sum + student.total_fee, 0);
+      const fullyPaid = students.filter(student => student.total_fee - student.fee_paid <= 0).length;
+      const activeTraining = students.filter(student => calculateDaysRemaining(student.training_start, student.training_days) > 0).length;
+      const coveragePercent = Math.round((totalCollected / totalFee) * 100);
+      const completionPercent = Math.round((fullyPaid / students.length) * 100);
+
+      document.getElementById("totalStudents").textContent = students.length;
+      document.getElementById("pendingBalance").textContent = formatCurrency(totalPending);
+      document.getElementById("fullyPaid").textContent = fullyPaid;
+      document.getElementById("activeStudents").textContent = activeTraining;
+      document.getElementById("coveragePercent").textContent = `${coveragePercent}%`;
+      document.getElementById("completionPercent").textContent = `${completionPercent}%`;
+      document.getElementById("coverageBar").style.width = `${coveragePercent}%`;
+      document.getElementById("completionBar").style.width = `${completionPercent}%`;
     }
 
-    function updateStats() {
-      if (students.length === 0) {
-        document.getElementById("stats").textContent = "No data yet.";
+    document.getElementById("studentForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const studentId = document.getElementById("studentId").value.trim().toUpperCase();
+      const student = students.find(item => item.id === studentId);
+      const resultBox = document.getElementById("resultBox");
+
+      if (!student) {
+        resultBox.innerHTML = "<strong>No student record found.</strong> Please verify the Student ID.";
         return;
       }
-      const cgpas = students.map(s => parseFloat(s.cgpa)).filter(n => !isNaN(n));
-      if (cgpas.length === 0) {
-        document.getElementById("stats").textContent = "No valid CGPA data.";
-        return;
-      }
-      const avg = (cgpas.reduce((a, b) => a + b, 0) / cgpas.length).toFixed(2);
-      const max = Math.max(...cgpas);
-      const min = Math.min(...cgpas);
-      document.getElementById("stats").textContent =
-        `Average CGPA: ${avg}, Highest: ${max}, Lowest: ${min}`;
-    }
 
-    document.getElementById("addStudentForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const name = this.name.value.trim();
-      const course = this.course.value.trim();
-      const cgpa = this.cgpa.value.trim();
-      students.push({ name, course, cgpa });
-      renderStudents();
-      this.reset();
+      const balance = student.total_fee - student.fee_paid;
+      const daysLeft = calculateDaysRemaining(student.training_start, student.training_days);
+      const status = getStatus(balance, daysLeft);
+
+      resultBox.innerHTML = `
+        <strong>${student.name}</strong><br />
+        Student ID: ${student.id}<br />
+        Total Fee: ${formatCurrency(student.total_fee)}<br />
+        Fee Paid: ${formatCurrency(student.fee_paid)}<br />
+        Balance Remaining: <strong>${formatCurrency(balance)}</strong><br />
+        Training Days Remaining: ${daysLeft} days<br />
+        Status: <span class="status-pill ${status.className}">${status.label}</span>
+      `;
     });
 
-    document.getElementById("searchStudentForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const searchName = this.searchName.value.trim().toLowerCase();
-      const results = students.filter(s => s.name.toLowerCase().includes(searchName));
-      if (results.length === 0) {
-        alert("Student not found.");
-      } else {
-        renderStudents(results);
-      }
+    document.getElementById("searchInput").addEventListener("input", function () {
+      renderTable(this.value);
     });
 
-    function updateStudent(index) {
-      const student = students[index];
-      const newCourse = prompt("Enter new course:", student.course);
-      const newCgpa = prompt("Enter new CGPA:", student.cgpa);
-      if (newCourse) student.course = newCourse;
-      if (newCgpa) student.cgpa = newCgpa;
-      renderStudents();
+    const themeToggle = document.getElementById("themeToggle");
+    const savedTheme = localStorage.getItem("algonex-theme");
+
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark-mode");
+      themeToggle.textContent = "☀️ Light Mode";
     }
 
-    function deleteStudent(index) {
-      if (confirm("Are you sure you want to delete this student?")) {
+    themeToggle.addEventListener("click", function () {
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      localStorage.setItem("algonex-theme", isDark ? "dark" : "light");
+      themeToggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>
